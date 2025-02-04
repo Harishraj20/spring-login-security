@@ -39,11 +39,13 @@ public class UserRepository {
     }
 
     public User findByEmailId(String email) {
+        System.out.println("Received Email Id: "+email);
         try {
             Session session = sessionFactory.getCurrentSession();
             Criteria criteria = session.createCriteria(User.class);
             criteria.add(Restrictions.eq("email", email));
             User user = (User) criteria.uniqueResult();
+            System.out.println(user);
 
             return user;
 

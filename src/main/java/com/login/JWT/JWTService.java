@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 import javax.crypto.SecretKey;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,15 +42,19 @@ public class JWTService {
     }
 
     public String extractUsername(String token) {
+
         return extractClaim(token, Claims::getSubject);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
     private Claims extractAllClaims(String token) {
+        System.out.println("Secret Key for extractAllClaims: " +secretKey);
+
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
@@ -68,14 +74,25 @@ public class JWTService {
         try {
             final String username = extractUsername(token);
             if (isTokenExpired(token)) {
-                logger.warn("Token has expired.");
                 return false;
             }
-            logger.info("Token is valid!");
             return username.equals(userDetails.getUsername());
         } catch (JwtException e) {
-            logger.error("JwtException occurred: {}", e.getMessage());
             return false;
         }
+    }
+
+    public String getTokenFromCookie(HttpServletRequest request) {
+
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("jwtToken")) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }

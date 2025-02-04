@@ -47,10 +47,14 @@ public class UserService {
         }
 
         catch (BadCredentialsException e) {
-           throw new BadCredentialsException("Invalid email or password", e);
+            System.out.println("Bad credential exception!....");
+            throw new BadCredentialsException("Invalid email or password", e);
+        } catch (Exception e) {
+            System.out.println("General Exception occured!" + e.getMessage());
+            return null;
         }
         return null;
-        
+
     }
 
 }

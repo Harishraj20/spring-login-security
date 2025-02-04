@@ -20,6 +20,9 @@ public class MyUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         User user = userRepository.findByEmailId(username);
+        if(user == null){
+            throw new UsernameNotFoundException("Incorrect email Id!"); //If the username doesnt exists in the database...
+        }
         return new UserPrincipal(user);
     }
 
