@@ -22,6 +22,7 @@ public class UserRepository {
     public boolean checkExistingUser(String email) {
         try {
             Session session = sessionFactory.getCurrentSession();
+            @SuppressWarnings("deprecation")
             Criteria criteria = session.createCriteria(User.class);
             criteria.add(Restrictions.eq("email", email));
             User user = (User) criteria.uniqueResult();
@@ -42,6 +43,7 @@ public class UserRepository {
         System.out.println("Received Email Id: "+email);
         try {
             Session session = sessionFactory.getCurrentSession();
+            @SuppressWarnings("deprecation")
             Criteria criteria = session.createCriteria(User.class);
             criteria.add(Restrictions.eq("email", email));
             User user = (User) criteria.uniqueResult();

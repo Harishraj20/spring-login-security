@@ -17,16 +17,20 @@ public class UserService {
 
     private final UserRepository repository;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private JWTService jWTService;
+    private final AuthenticationManager authenticationManager;
+    
+    private final JWTService jWTService;
+
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
+
+
     @Autowired
-    public UserService(UserRepository repository) {
+    public UserService(UserRepository repository, AuthenticationManager authenticationManager, JWTService jWTService) {
         this.repository = repository;
+        this.authenticationManager = authenticationManager;
+        this.jWTService = jWTService;
     }
 
     public boolean addUser(User user) {
@@ -34,6 +38,7 @@ public class UserService {
         return repository.saveUser(user);
     }
 
+    @SuppressWarnings("UseSpecificCatch")
     public String loginWithCredentials(User user) {
 
         try {

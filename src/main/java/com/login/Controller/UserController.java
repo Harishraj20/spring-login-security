@@ -25,12 +25,12 @@ import com.login.Service.UserService;
 public class UserController {
 
     private final UserService userService;
-    @Autowired
-    private JWTService jwtService;
+    private final JWTService jwtService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JWTService jwtService) {
         this.userService = userService;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/signup")
@@ -54,24 +54,26 @@ public class UserController {
     public ResponseEntity<Map<String, String>> loginUser(@RequestBody User user, HttpServletResponse response) {
         try {
             String val = userService.loginWithCredentials(user);
-            Cookie cookie = new Cookie("jwtToken", val);
-            cookie.setHttpOnly(true);
-            cookie.setMaxAge((int) jwtService.extractExpiration(val).getTime() / 1000);
-            cookie.setPath("/");
-            response.addCookie(cookie);
+            
 
             if (val != null) {
+                Cookie cookie = new Cookie("jwtToken", val);
+                cookie.setHttpOnly(true);
+                cookie.setMaxAge(1000 * 60 * 60);
+                cookie.setPath("/");
+                response.addCookie(cookie);
                 return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("jwtToken", val));
             }
-
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("msg", "User Doesnt exists!"));
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("msg", "Internal Server error..."));
+
     }
 
     @GetMapping("/auth")
     public ResponseEntity<?> authenticationCheck(HttpServletRequest request) {
+        System.out.println("Object: "+jwtService);
         String token = jwtService.getTokenFromCookie(request);
         System.out.println("Token from cookie: " + token);
 
@@ -80,15 +82,13 @@ public class UserController {
                 String user = jwtService.extractUsername(token);
                 System.out.println(user);
                 return ResponseEntity.status(HttpStatus.OK).body(Map.of("user", user));
-            }
+             }
         } catch (Exception e) {
             System.out.println("Exception: " + e);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid Token"));
         }
-
-        System.out.println("No token!");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "No Token Found"));
-    }
+     }
 
     @GetMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {

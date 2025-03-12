@@ -1,0 +1,17 @@
+# Ignore target directory (compiled files, classes, JARs, etc.)
+target/
+
+# Ignore Maven build logs
+mvnw.log
+
+# Ignore dependency cache
+.m2/
+
+# Ignore Eclipse, VS Code, and IntelliJ project settings
+.vscode/
+
+# Ignore compiled Java class files
+*.class
+
+# Ignore log files
+*.log
